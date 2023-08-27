@@ -1,0 +1,28 @@
+{
+    "version" : "1.0",
+    "configurations" : [
+        {
+            "playground" : "custom",
+            "type" : "uni-app:app-android"
+        },
+        {
+        	"app-plus" : 
+        	{
+        		"launchtype" : "remote"
+        	},
+        	"h5" : 
+        	{
+        		"launchtype" : "local"
+        	},
+        	"mp-weixin" : 
+        	{
+        		"launchtype" : "local"
+        	},
+        	"type" : "uniCloud"
+        },
+        {
+            "playground" : "standard",
+            "type" : "uni-app:app-ios_simulator"
+        }
+    ]
+}

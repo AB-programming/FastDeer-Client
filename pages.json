@@ -1,0 +1,125 @@
+{
+	"easycom": {
+		"^u-(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue"
+	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/editor/postEditor",
+			"style": {
+				"navigationStyle": "custom", // 隐藏系统导航栏
+				"navigationBarTextStyle": "black" // 状态栏字体为白色，只能为 white-白色，black-黑色 二选一
+			}
+		},
+		{
+			"path": "pages/userInfo/userInfo",
+			"style": {
+				"navigationBarTitleText": "个人详情",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/mes/index",
+			"style": {
+				"navigationBarTitleText": "消息"
+			}
+		},
+		{
+			"path": "pages/me/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/detail/detail",
+			"style": {
+				"navigationBarTitleText": "帖子详情",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/comment/reply",
+			"style": {
+				"navigationBarTitleText": "评论详情",
+				"enablePullDownRefresh": false
+			}
+		}, 
+		{
+			"path": "pages/recruitment/index",
+			"style": {
+				"navigationBarTitleText": "热门校招",
+				"enablePullDownRefresh": false
+			}
+		}
+	    ,{
+            "path" : "pages/editor/userInfoEditor",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "用户信息修改",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/detail/myPost",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "我的帖子",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/chat/chat",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "聊天",
+                "enablePullDownRefresh": false
+            }
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "快鹿",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {},
+	"uni-cloud-verify": {
+		"name": "univerify",
+		"extensions": {
+			"uni-cloud-verify": {}
+		}
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#000000",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/icons/home.png",
+				"selectedIconPath": "static/icons/home2.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/mes/index",
+				"iconPath": "static/icons/mes.png",
+				"selectedIconPath": "static/icons/mes2.png",
+				"text": "消息"
+			},
+			{
+				"pagePath": "pages/me/index",
+				"iconPath": "static/icons/me.png",
+				"selectedIconPath": "static/icons/me2.png",
+				"text": "我的"
+			}
+		]
+	}
+}

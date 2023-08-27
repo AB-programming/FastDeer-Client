@@ -1,0 +1,8 @@
+{
+  "name": "Fastdeer-Login",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {},
+    "uni-cloud-verify": {}
+  }
+}
