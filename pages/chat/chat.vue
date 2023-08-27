@@ -37,7 +37,7 @@
 	const scrollTop: Ref<Number> = ref()
 
 	const dbc = (e) => {
-		// console.log('双击', e);
+		console.log('双击', e);
 	}
 	
 	onMounted(() => {
