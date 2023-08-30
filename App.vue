@@ -1,17 +1,6 @@
 <script setup lang="ts">
-	import { onLaunch, onLoad, onUnload } from '@dcloudio/uni-app'
+	import { onLaunch, onUnload } from '@dcloudio/uni-app'
 	import { config } from '@/constant/config.js'
-
-	type Message = {
-		sender : String,
-		content : String
-	}
-
-	type SendRes = {
-		sender : String,
-		content : String,
-		isSend : Boolean
-	}
 
 	onLaunch(async () => {
 		try {
@@ -39,14 +28,7 @@
 				}
 			})
 			uni.onSocketMessage(function (res) {
-				const mes = JSON.parse(res.data)
-				if (mes.sender === openId.data) {
-					const sendRes = mes as SendRes
-					console.log("[SendRes]: " + sendRes.content)
-				} else {
-					const message = mes as Message
-					console.log("[" + message.sender + "]: " + message.content)
-				}
+				uni.$emit('updateMessage', res.data)
 			});
 		} catch (e) {
 			uni.showToast({

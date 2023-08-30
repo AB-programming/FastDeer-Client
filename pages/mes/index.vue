@@ -47,107 +47,92 @@
 				</view>
 			</view>
 
-			<view class="cu-list menu-avatar padding-tb-sm" @click="toChat">
-				<view class="cu-item">
-					<view class="cu-avatar round lg bg-oc-blue-3">
-						<view class="cuIcon-notice text-white"></view>
-					</view>
-					<view class="content">
-						<view class="text-lg text-black">
-							互动消息
+			<view v-for="chat in chatList" :key="chat.senderId">
+				<view class="cu-list menu-avatar" @click="toChat(chat.senderId)">
+					<view class="cu-item">
+						<view class="cu-avatar round lg">
+							<image :src="chat.senderAvatar" style="width: 80rpx;height: 80rpx;border-radius: 50%;">
+							</image>
 						</view>
-						<view class="text-gray text-sm">
-							暂无通知消息
+						<view class="content">
+							<view class="text-lg text-black">
+								{{ chat.senderName }}
+							</view>
+							<view class="text-gray text-sm">
+								{{ chat.latestMessage }}
+							</view>
 						</view>
-					</view>
-				</view>
-				<view class="cu-item" @click="toChat">
-					<view class="cu-avatar round lg bg-oc-pink-4">
-						<view class="cuIcon-deliver text-white"></view>
-					</view>
-					<view class="content">
-						<view class="text-lg text-black">
-							天天抢车位
+						<view class="action text-xl text-gray">
+							<view class="cuIcon-moreandroid"></view>
+							<view v-if="chat.unreadCount !== 0" class="cu-tag round sm bg-red">{{ chat.unreadCount }}
+							</view>
 						</view>
-						<view class="text-gray text-sm">
-							你的车车再不停就要生锈了
-						</view>
-					</view>
-					<view class="action text-xl text-gray">
-						<view class="cuIcon-moreandroid"></view>
-						<view class="cu-tag round sm bg-red">4</view>
-					</view>
-				</view>
-				<view class="cu-item" @click="toChat">
-					<view class="cu-avatar round lg bg-oc-indigo-5">
-						<view class="cuIcon-mark text-white"></view>
-					</view>
-					<view class="content">
-						<view class="text-lg text-red">
-							陌陌
-						</view>
-						<view class="text-gray text-sm">
-							12.90km · [语音]
-						</view>
-					</view>
-					<view class="action text-gray">
-						<view>6-17</view>
-						<view class="cu-tag round sm bg-red">2</view>
-					</view>
-				</view>
-				<view class="cu-item" @click="toChat">
-					<view class="cu-avatar round lg bg-oc-orange-4">
-						<view class="cuIcon-service text-white"></view>
-					</view>
-					<view class="content">
-						<view class="text-lg text-blue">
-							ColorUI GA 客服
-						</view>
-						<view class="text-gray text-sm">
-							欢迎使用ColorUI GA组件库！
-						</view>
-					</view>
-					<view class="action text-gray">
-						<view>9-15</view>
-						<view class="cu-tag round sm bg-grey">3</view>
-					</view>
-				</view>
-				<view class="cu-item" @click="toChat">
-					<view class="cu-avatar round lg bg-oc-green-4">
-						<view class="cuIcon-discover text-white"></view>
-					</view>
-					<view class="content">
-						<view class="text-lg text-green">
-							小宇宙
-						</view>
-						<view class="text-gray text-sm">
-							欢迎来到小宇宙！
-						</view>
-					</view>
-					<view class="action text-gray">
-						<view>12-15</view>
-						<view class="cu-tag round sm bg-grey">2</view>
 					</view>
 				</view>
 			</view>
 		</view>
+
 	</view>
 
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-	
+	import { ref, Ref } from "vue";
+	import { onLoad } from '@dcloudio/uni-app'
+	import { config } from '@/constant/config.js'
+	import { Response } from '@/util/type'
+
+	interface Chat {
+		senderId : string,
+		senderName : string,
+		senderAvatar : string,
+		latestMessage : string,
+		unreadCount : number
+	}
+
+	const chatList : Ref<Array<Chat>> = ref([])
+
 	const searchValue = ref("")
-	
-	const toChat = () => {
+
+	const toChat = (id: string) => {
 		uni.navigateTo({
-			url: '/pages/chat/chat',
+			url: '/pages/chat/chat?id=' + id,
 			animationType: 'slide-in-right',
 			animationDuration: 500
 		})
 	}
-	
+
+	onLoad(async () => {
+		try {
+			const openId = await uni.getStorage({ key: 'openId' })
+			const token = await uni.getStorage({ key: 'token' })
+
+			const res = await uni.request({
+				url: config.address + '/chat/getChatList',
+				method: 'GET',
+				data: {
+					userId: openId.data
+				},
+				header: {
+					"Authorization": token.data
+				}
+			})
+			const chatListRes = res.data as Response<Array<Chat>>
+			if (chatListRes.code === '200') {
+				chatList.value = chatListRes.data
+			} else {
+				uni.showToast({
+					title: chatListRes.msg,
+					duration: 2000
+				})
+			}
+		} catch (e) {
+			uni.showToast({
+				title: "网络错误，获取聊天列表失败",
+				duration: 2000
+			})
+		}
+	})
 </script>
 
 <style>

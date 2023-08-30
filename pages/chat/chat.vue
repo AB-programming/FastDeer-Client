@@ -2,9 +2,9 @@
 	<view>
 		<scroll-view :scroll-top="scrollTop" style="height: 100vh;" :scroll-y="true" class="chat" show-scrollbar>
 			<view id="chat-list">
-			<template v-for="(item,i) in 59" :key="i">
-				<uv-chat content="hello" @avatarClickDb="dbc" :me="i % 2 == 1"
-					avatar="https://img2.baidu.com/it/u=2833484760,1116678162&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1668704400&t=f1a5caae1807a6c83625a8a28991e829">
+			<template v-for="(message, index) in chatRecord" :key="index">
+				<uv-chat :content="message.content" @avatarClickDb="dbc" :me="message.isMe"
+					:avatar="message.senderAvatar" :nick="message.senderName">
 					<template v-slot:content="{ other, content }">
 						<uv-chat-text :text="content"></uv-chat-text>
 					</template>
@@ -26,6 +26,9 @@
 	import { ref, onMounted, Ref } from 'vue'
 	import uvChat from '@/components/uv-chat/uv-chat/uv-chat.vue'
 	import uvChatText from '@/components/uv-chat/uv-chat-text/uv-chat-text.vue'
+	import { onLoad } from '@dcloudio/uni-app'
+	import { config } from '@/constant/config.js'
+	import { Response, MessageView } from '@/util/type'
 
 	interface Message {
 		userId: String
@@ -33,14 +36,27 @@
 		content: String
 	}
 
+	const chatRecord: Ref<Array<MessageView>> = ref([])
+
 	const value = ref('')
 	const scrollTop: Ref<Number> = ref()
+	let targetId: string = ""
 
 	const dbc = (e) => {
 		console.log('双击', e);
 	}
 	
 	onMounted(() => {
+		setTimeout(() => {
+			uni.createSelectorQuery().in(this).select('#chat-list').boundingClientRect((res) => {
+				// @ts-ignore
+				scrollTop.value = res.height
+			}).exec()
+		}, 1000)
+	})
+	
+	uni.$on('updateMessage', function(messageView: string) {
+		chatRecord.value.push(JSON.parse(messageView) as MessageView)
 		uni.createSelectorQuery().in(this).select('#chat-list').boundingClientRect((res) => {
 			// @ts-ignore
 			scrollTop.value = res.height
@@ -48,19 +64,68 @@
 	})
 	
 	const send = async () => {
-		const openId = await uni.getStorage({
-			key: 'openId'
-		})
-		const message: Message = {
-			userId: openId.data,
-			targetId: openId.data === '1' ? '2' : '1',
-			content: value.value
+		try {
+			const openId = await uni.getStorage({
+				key: 'openId'
+			})
+			const message: Message = {
+				userId: openId.data,
+				targetId: targetId,
+				content: value.value
+			}
+			if (value.value == "") {
+				uni.showToast({
+					title: "请输入内容",
+					duration: 2000
+				})
+				return
+			}
+			uni.sendSocketMessage({
+				data: JSON.stringify(message)
+			})
+		} catch(e) {
+			uni.showToast({
+				title: "请先登录",
+				duration: 2000
+			})
 		}
-		
-		uni.sendSocketMessage({
-			data: JSON.stringify(message)
-		})
+		value.value = ''
 	}
+	
+	onLoad(async (options) => {
+		try {
+			const token = await uni.getStorage({key: 'token'})
+			const openId = await uni.getStorage({key: 'openId'})
+			if (options.id !== undefined) {
+				targetId = options.id
+				const res = await uni.request({
+					url: config.address + '/chat/getChatRecord',
+					method: 'GET',
+					header: {
+						"Authorization": token.data
+					},
+					data: {
+						userId: openId.data,
+						targetId: options.id
+					}
+				})
+				const chatRecordRes = res.data as Response<Array<MessageView>>
+				if (chatRecordRes.code === '200') {
+					chatRecord.value = chatRecordRes.data
+				} else {
+					uni.showToast({
+						title: chatRecordRes.msg,
+						duration: 2000
+					})
+				}
+			}
+		} catch(e) {
+			uni.showToast({
+				title: "网络错误，获取聊天列表失败",
+				duration: 2000
+			})
+		}
+	})
 </script>
 
 <style scoped>
