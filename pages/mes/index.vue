@@ -80,7 +80,7 @@
 	import { ref, Ref } from "vue";
 	import { onLoad } from '@dcloudio/uni-app'
 	import { config } from '@/constant/config.js'
-	import { Response } from '@/util/type'
+	import { Response, MessageView } from '@/util/type'
 
 	interface Chat {
 		senderId : string,
@@ -94,7 +94,7 @@
 
 	const searchValue = ref("")
 
-	const toChat = (id: string) => {
+	const toChat = (id : string) => {
 		uni.navigateTo({
 			url: '/pages/chat/chat?id=' + id,
 			animationType: 'slide-in-right',
@@ -131,6 +131,36 @@
 				title: "网络错误，获取聊天列表失败",
 				duration: 2000
 			})
+		}
+	})
+
+	uni.$on('readMessage', function (targetId : string) {
+		const chat = chatList.value.find(chat => chat.senderId === targetId)
+		if (chat) {
+			chat.unreadCount = 0
+		}
+	})
+
+	uni.$on("updateMessage", async function (message : string) {
+		const messageView = JSON.parse(message) as MessageView
+		const openId = await uni.getStorage({key: 'openId'})
+		if (messageView.senderId === openId.data) {
+			return
+		}
+		const chat = chatList.value.find(chat => chat.senderId === messageView.senderId)
+		if (chat) {
+			chat.latestMessage = messageView.content
+			chat.unreadCount++
+		} else {
+			// if not chatRecord
+			const chat: Chat = {
+				senderId: messageView.senderId,
+				senderName: messageView.senderName,
+				senderAvatar: messageView.senderAvatar,
+				latestMessage: messageView.content,
+				unreadCount: 1
+			}
+			chatList.value.push(chat)
 		}
 	})
 </script>

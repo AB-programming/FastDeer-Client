@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted, Ref } from 'vue'
+	import { ref, Ref, onUpdated, onUnmounted } from 'vue'
 	import uvChat from '@/components/uv-chat/uv-chat/uv-chat.vue'
 	import uvChatText from '@/components/uv-chat/uv-chat-text/uv-chat-text.vue'
 	import { onLoad } from '@dcloudio/uni-app'
@@ -45,14 +45,29 @@
 	const dbc = (e) => {
 		console.log('双击', e);
 	}
+
+	onUpdated(() => {
+		uni.createSelectorQuery().in(this).select('#chat-list').boundingClientRect((res) => {
+			// @ts-ignore
+			scrollTop.value = res.height
+		}).exec()
+	})
 	
-	onMounted(() => {
-		setTimeout(() => {
-			uni.createSelectorQuery().in(this).select('#chat-list').boundingClientRect((res) => {
-				// @ts-ignore
-				scrollTop.value = res.height
-			}).exec()
-		}, 1000)
+	onUnmounted(async () => {
+		const token = await uni.getStorage({key: 'token'})
+		const openId = await uni.getStorage({key: 'openId'})
+		await uni.request({
+			url: config.address + '/chat/readMessage',
+			method: 'POST',
+			header: {
+				"Authorization": token.data
+			},
+			data: {
+				userId: openId.data,
+				targetId: targetId
+			}
+		})
+		uni.$emit('readMessage', targetId)
 	})
 	
 	uni.$on('updateMessage', function(messageView: string) {
