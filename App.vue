@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { onLaunch, onUnload } from '@dcloudio/uni-app'
 	import { config } from '@/constant/config.js'
-
+	
 	onLaunch(async () => {
 		try {
 			const openId = await uni.getStorage({
@@ -28,7 +28,13 @@
 				}
 			})
 			uni.onSocketMessage(function (res) {
-				uni.$emit('updateMessage', res.data)
+				// @ts-ignore
+				if (JSON.parse(res.data).isMe === true) {
+					uni.$emit('updateMessage', res.data)
+				} else {
+					uni.$emit('updateChatList', res.data)
+					uni.$emit('updateMessage', res.data)
+				}
 			});
 		} catch (e) {
 			uni.showToast({

@@ -62,9 +62,11 @@
 								{{ chat.latestMessage }}
 							</view>
 						</view>
+						<view v-if="chat.unreadCount !== 0" class="cu-tag round sm bg-red">{{ chat.unreadCount }}
+						</view>&nbsp;&nbsp;&nbsp;
 						<view class="action text-xl text-gray">
-							<view class="cuIcon-moreandroid"></view>
-							<view v-if="chat.unreadCount !== 0" class="cu-tag round sm bg-red">{{ chat.unreadCount }}
+							<view @click.stop="() => {delMesShow = true; delId = chat.senderId}"><u-icon
+									name="close-circle" size="28px"></u-icon>
 							</view>
 						</view>
 					</view>
@@ -72,9 +74,11 @@
 			</view>
 		</view>
 
-		<u-modal :show="searchShow" :showConfirmButton="false" closeOnClickOverlay @close="closeSearchFriend" width="600rpx">
+		<u-modal :show="searchShow" :showConfirmButton="false" closeOnClickOverlay @close="closeSearchFriend"
+			width="600rpx">
 			<view class="slot-content" height="400">
-				<u-search placeholder="请输入openId或昵称" shape="square" @custom="search" :show-action="true" actionText="搜索" :animation="true"></u-search>
+				<u-search placeholder="请输入openId或昵称" shape="square" @custom="search" :show-action="true" actionText="搜索"
+					:animation="true"></u-search>
 				<view class="u-page">
 					<u-list height="300" :pagingEnabled="true" scrollWithAnimation>
 						<u-list-item v-for="user in users" :key="user.id">
@@ -82,8 +86,8 @@
 								<template #icon>
 									<u-avatar shape="square" size="35" :src="user.avatarUrl"
 										customStyle="margin: -3px 5px -3px 0"></u-avatar>
-										<u-icon :name="user.gender === '男' ? 'man' : 'woman'"
-											:color="user.gender === '男' ? '#2979ff' : '#fab6b6'" size="20"></u-icon>
+									<u-icon :name="user.gender === '男' ? 'man' : 'woman'"
+										:color="user.gender === '男' ? '#2979ff' : '#fab6b6'" size="20"></u-icon>
 								</template>
 							</u-cell>
 						</u-list-item>
@@ -91,12 +95,14 @@
 				</view>
 			</view>
 		</u-modal>
+		<u-modal :show="delMesShow" title="删除聊天记录" content='确定要删除此条聊天记录吗？' showCancelButton closeOnClickOverlay
+			@close="delMesShow = false" @cancel="delMesShow = false" @confirm="delMes" width="300"></u-modal>
 	</view>
 </template>
 
 <script setup lang="ts">
 	import { ref, Ref } from "vue";
-	import { onLoad } from '@dcloudio/uni-app'
+	import { onShow } from '@dcloudio/uni-app'
 	import { config } from '@/constant/config.js'
 	import { Response, MessageView, User } from '@/util/type'
 
@@ -111,8 +117,8 @@
 	const chatList : Ref<Array<Chat>> = ref([])
 
 	const searchValue = ref("")
-	
-	const users: Ref<Array<User>> = ref([])
+
+	const users : Ref<Array<User>> = ref([])
 
 	const toChat = (id : string) => {
 		uni.navigateTo({
@@ -122,7 +128,7 @@
 		})
 	}
 
-	onLoad(async () => {
+	onShow(async () => {
 		try {
 			const openId = await uni.getStorage({ key: 'openId' })
 			const token = await uni.getStorage({ key: 'token' })
@@ -161,7 +167,7 @@
 		}
 	})
 
-	uni.$on("updateMessage", async function (message : string) {
+	uni.$on("updateChatList", async function (message : string) {
 		const messageView = JSON.parse(message) as MessageView
 		const openId = await uni.getStorage({ key: 'openId' })
 		if (messageView.senderId === openId.data) {
@@ -185,7 +191,7 @@
 	})
 
 	const searchShow = ref(false)
-	const search = async (keyword: string) => {
+	const search = async (keyword : string) => {
 		if (keyword === '') {
 			uni.showToast({
 				title: "请输入内容",
@@ -194,7 +200,7 @@
 			return
 		}
 		try {
-			const token = await uni.getStorage({key: 'token'})
+			const token = await uni.getStorage({ key: 'token' })
 			const res = await uni.request({
 				url: config.address + "/user/selectUserByKeyword",
 				method: 'GET',
@@ -206,7 +212,7 @@
 				}
 			})
 			const userRes = res.data as Response<Array<User>>
-			
+
 			if (userRes.code === '200') {
 				users.value = userRes.data
 			} else {
@@ -215,25 +221,68 @@
 					duration: 2000
 				})
 			}
-		} catch(e) {
+		} catch (e) {
 			uni.showToast({
 				title: "网络错误，请稍后再试",
 				duration: 2000
 			})
 		}
 	}
-	
+
 	const closeSearchFriend = () => {
 		users.value = []
 		searchShow.value = false
 	}
-	
-	const toUserInfo = (userId: String) => {
+
+	const toUserInfo = (userId : String) => {
 		uni.navigateTo({
 			url: "/pages/userInfo/userInfo?userId=" + userId,
 			animationType: 'zoom-fade-out',
 			animationDuration: 400
 		});
+		searchShow.value = false
+	}
+
+	const delMesShow = ref(false)
+	let delId = ""
+
+	const delMes = async () => {
+		try {
+			const token = await uni.getStorage({ key: 'token' })
+			const openId = await uni.getStorage({ key: 'openId' })
+
+			const res = await uni.request({
+				url: config.address + '/chat/deleteChat',
+				method: 'DELETE',
+				header: {
+					"Authorization": token.data
+				},
+				data: {
+					userId: openId.data,
+					targetId: delId
+				},
+			})
+			// @ts-ignore
+			if (res.data.code === '200') {
+				chatList.value.splice(chatList.value.findIndex(chat => chat.senderId === delId), 1)
+				uni.showToast({
+					// @ts-ignore
+					title: res.data.msg,
+					duration: 2000
+				})
+			} else {
+				uni.showToast({
+					title: "网络错误，请稍后再试",
+					duration: 2000
+				})
+			}
+		} catch (e) {
+			uni.showToast({
+				title: "网络错误，请稍后再试",
+				duration: 2000
+			})
+		}
+		delMesShow.value = false
 	}
 </script>
 
