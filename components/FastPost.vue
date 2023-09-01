@@ -5,11 +5,11 @@
 				<view class="u-demo-block__content post">
 					<view class="album">
 						<view class="album__avatar">
-							<image @click="toUserInfo(post)" :src="post.userInfo.avatar"
+							<image @click="toUserInfo(post.userInfo.userId)" :src="post.userInfo.avatar"
 								style="width: 80rpx;height: 80rpx;border-radius: 50%;">
 							</image>
 						</view>
-						<view class="album__content" @click="toUserInfo(post)">
+						<view class="album__content" @click="toUserInfo(post.userInfo.userId)">
 							<u--text :text="post.userInfo.name" type="primary" bold size="17"></u--text>
 							<view class="album__content__x">
 								<text>{{post.date}}</text>
@@ -67,9 +67,9 @@
 		posts ?: Array<Post>
 	}>()
 
-	const toUserInfo = (post : Post) => {
+	const toUserInfo = (userId : String) => {
 		uni.navigateTo({
-			url: "/pages/userInfo/userInfo?post=" + encodeURIComponent(JSON.stringify(post)),
+			url: "/pages/userInfo/userInfo?userId=" + userId,
 			animationType: 'zoom-fade-out',
 			animationDuration: 400
 		});

@@ -50,7 +50,7 @@
 				"enablePullDownRefresh": false
 			}
 		}, 
-	    ,{
+	    {
             "path" : "pages/editor/userInfoEditor",
             "style" :                                                                                    
             {

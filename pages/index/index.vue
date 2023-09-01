@@ -94,13 +94,7 @@
 	},]
 	
 	const click = (name : any) => {
-		if (name == 0) {
-			uni.navigateTo({
-				url: '/pages/recruitment/index',
-				animationType: 'zoom-fade-out',
-				animationDuration: 500
-			})
-		}
+		
 	}
 
 	// 论坛内容

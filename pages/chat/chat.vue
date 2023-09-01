@@ -3,7 +3,7 @@
 		<scroll-view :scroll-top="scrollTop" style="height: 100vh;" :scroll-y="true" class="chat" show-scrollbar>
 			<view id="chat-list">
 			<template v-for="(message, index) in chatRecord" :key="index">
-				<uv-chat :content="message.content" @avatarClickDb="dbc" :me="message.isMe"
+				<uv-chat :content="message.content" @avatarClick="avatarClick(message.senderId)" :me="message.isMe"
 					:avatar="message.senderAvatar" :nick="message.senderName">
 					<template v-slot:content="{ other, content }">
 						<uv-chat-text :text="content"></uv-chat-text>
@@ -42,8 +42,12 @@
 	const scrollTop: Ref<Number> = ref()
 	let targetId: string = ""
 
-	const dbc = (e) => {
-		console.log('双击', e);
+	const avatarClick = (userId: string) => {
+		uni.navigateTo({
+			url: "/pages/userInfo/userInfo?userId=" + userId,
+			animationType: 'zoom-fade-out',
+			animationDuration: 400
+		});
 	}
 
 	onUpdated(() => {
@@ -134,6 +138,22 @@
 					})
 				}
 			}
+			uni.request({
+				url: config.address + '/user/getUserById',
+				method: 'GET',
+				header: {
+					"Authorization": token.data
+				},
+				data: {
+					openId: options.id
+				},
+				success: (res) => {
+					uni.setNavigationBarTitle({
+						// @ts-ignore
+						title: res.data.data.nickName
+					})
+				}
+			})
 		} catch(e) {
 			uni.showToast({
 				title: "网络错误，获取聊天列表失败",

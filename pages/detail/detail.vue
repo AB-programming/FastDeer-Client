@@ -2,9 +2,9 @@
 	<view class="box">
 		<view class="above">
 			<view class="post_info">
-				<image @click="toUserInfo(post)" :src="post.userInfo.avatar"
+				<image @click="toUserInfo(post.userInfo.userId)" :src="post.userInfo.avatar"
 					style="width: 80rpx;height: 80rpx; border-radius: 50%;"></image>
-				<view class="info" @click="toUserInfo(post)">
+				<view class="info" @click="toUserInfo(post.userInfo.userId)">
 					<u--text class="username" :text="post.userInfo.name" :bold="true"></u--text>
 					<u--text class="schoolInfo" color="#737373" size="25rpx" lineHeight="40rpx"
 						:text="post.userInfo.schoolInfo.schoolName+'&nbsp;'+post.userInfo.schoolInfo.major"></u--text>
@@ -188,9 +188,9 @@
 		}
 	};
 
-	const toUserInfo = (post : Post) => {
+	const toUserInfo = (userId : String) => {
 		uni.navigateTo({
-			url: "/pages/userInfo/userInfo?post=" + encodeURIComponent(JSON.stringify(post))
+			url: "/pages/userInfo/userInfo?userId=" + userId
 		});
 	};
 

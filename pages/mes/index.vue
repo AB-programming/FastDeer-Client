@@ -7,7 +7,7 @@
 						消息
 					</view>
 					<view class="text-lg">
-						<view class="cu-avatar round margin-left bg-gray">
+						<view class="cu-avatar round margin-left bg-gray" @click="searchShow = true">
 							<view class="flex justify-center cuIcon-peoplelist text-blace"></view>
 						</view>
 					</view>
@@ -72,15 +72,33 @@
 			</view>
 		</view>
 
+		<u-modal :show="searchShow" :showConfirmButton="false" closeOnClickOverlay @close="closeSearchFriend" width="600rpx">
+			<view class="slot-content" height="400">
+				<u-search placeholder="请输入openId或昵称" shape="square" @custom="search" :show-action="true" actionText="搜索" :animation="true"></u-search>
+				<view class="u-page">
+					<u-list height="300" :pagingEnabled="true" scrollWithAnimation>
+						<u-list-item v-for="user in users" :key="user.id">
+							<u-cell :title="user.nickName" @click="toUserInfo(user.id)">
+								<template #icon>
+									<u-avatar shape="square" size="35" :src="user.avatarUrl"
+										customStyle="margin: -3px 5px -3px 0"></u-avatar>
+										<u-icon :name="user.gender === '男' ? 'man' : 'woman'"
+											:color="user.gender === '男' ? '#2979ff' : '#fab6b6'" size="20"></u-icon>
+								</template>
+							</u-cell>
+						</u-list-item>
+					</u-list>
+				</view>
+			</view>
+		</u-modal>
 	</view>
-
 </template>
 
 <script setup lang="ts">
 	import { ref, Ref } from "vue";
 	import { onLoad } from '@dcloudio/uni-app'
 	import { config } from '@/constant/config.js'
-	import { Response, MessageView } from '@/util/type'
+	import { Response, MessageView, User } from '@/util/type'
 
 	interface Chat {
 		senderId : string,
@@ -93,6 +111,8 @@
 	const chatList : Ref<Array<Chat>> = ref([])
 
 	const searchValue = ref("")
+	
+	const users: Ref<Array<User>> = ref([])
 
 	const toChat = (id : string) => {
 		uni.navigateTo({
@@ -143,7 +163,7 @@
 
 	uni.$on("updateMessage", async function (message : string) {
 		const messageView = JSON.parse(message) as MessageView
-		const openId = await uni.getStorage({key: 'openId'})
+		const openId = await uni.getStorage({ key: 'openId' })
 		if (messageView.senderId === openId.data) {
 			return
 		}
@@ -153,7 +173,7 @@
 			chat.unreadCount++
 		} else {
 			// if not chatRecord
-			const chat: Chat = {
+			const chat : Chat = {
 				senderId: messageView.senderId,
 				senderName: messageView.senderName,
 				senderAvatar: messageView.senderAvatar,
@@ -163,6 +183,58 @@
 			chatList.value.push(chat)
 		}
 	})
+
+	const searchShow = ref(false)
+	const search = async (keyword: string) => {
+		if (keyword === '') {
+			uni.showToast({
+				title: "请输入内容",
+				duration: 2000
+			})
+			return
+		}
+		try {
+			const token = await uni.getStorage({key: 'token'})
+			const res = await uni.request({
+				url: config.address + "/user/selectUserByKeyword",
+				method: 'GET',
+				header: {
+					"Authorization": token.data
+				},
+				data: {
+					keyword
+				}
+			})
+			const userRes = res.data as Response<Array<User>>
+			
+			if (userRes.code === '200') {
+				users.value = userRes.data
+			} else {
+				uni.showToast({
+					title: userRes.msg,
+					duration: 2000
+				})
+			}
+		} catch(e) {
+			uni.showToast({
+				title: "网络错误，请稍后再试",
+				duration: 2000
+			})
+		}
+	}
+	
+	const closeSearchFriend = () => {
+		users.value = []
+		searchShow.value = false
+	}
+	
+	const toUserInfo = (userId: String) => {
+		uni.navigateTo({
+			url: "/pages/userInfo/userInfo?userId=" + userId,
+			animationType: 'zoom-fade-out',
+			animationDuration: 400
+		});
+	}
 </script>
 
 <style>

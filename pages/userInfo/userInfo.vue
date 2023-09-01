@@ -1,11 +1,11 @@
 <template>
 	<view>
-		<view class="AvatarBar" :style="'background-image: url('+bgiURL+');'">
+		<view class="AvatarBar" style="background-image: url(/static/back-userinfo.jpg);">
 			<view class="avatar">
-				<image class="avatar_xBox" :src="post.userInfo.avatar"
+				<image class="avatar_xBox" :src="userInfo.avatar"
 					style="width: 100rpx;height: 100rpx;border-radius: 50%;"></image>
 				<view class="avatar_yBox">
-					<u--text :text="post.userInfo.name" bold size="17" color="white"
+					<u--text :text="userInfo.name" bold size="17" color="white"
 						style="margin-left: 10rpx;"></u--text>
 					<view class="cu-tag round line-green sm">普通用户</view>
 				</view>
@@ -15,31 +15,31 @@
 				<view>
 					<text class="iconf2" style="font-size: 40rpx;color: #A0A0A0A0;">&#xe62c;</text>
 					<text
-						style="font-size: 20rpx;color: #A0A0A0A0;margin-left: 10rpx;">{{post.userInfo.schoolInfo.schoolName}}</text>
+						style="font-size: 20rpx;color: #A0A0A0A0;margin-left: 10rpx;">{{userInfo.schoolInfo.schoolName}}</text>
 				</view>
 			</view>
 
 			<view class="info">
 				<view class="info_yBox">
-					<text>{{post.userInfo.socialInfo.likes}}</text>
+					<text>{{userInfo.socialInfo.likes}}</text>
 					<text class="ft">获赞</text>
 				</view>
 
 				<view class="info_yBox">
-					<text>{{post.userInfo.socialInfo.fans}}</text>
+					<text>{{userInfo.socialInfo.fans}}</text>
 					<text class="ft">粉丝</text>
 				</view>
 
 				<view class="info_yBox">
-					<text>{{post.userInfo.socialInfo.following}}</text>
+					<text>{{userInfo.socialInfo.following}}</text>
 					<text class="ft">关注</text>
 				</view>
 				<view>
 					<u-button :text="isAttention ? '已关注' : '+关注'" shape="circle"
-						:color="isAttention ? '#c8c9cc' : '#31B96E'" @click="attention(post.userInfo)"
+						:color="isAttention ? '#c8c9cc' : '#31B96E'" @click="attention(userInfo)"
 						style="width: 120rpx;height: 50rpx;margin-top: 10rpx;"></u-button>
 				</view>
-				<u-icon name="chat" size="50rpx" color="white"></u-icon>
+				<u-icon name="chat" size="50rpx" color="white" @click="toChat"></u-icon>
 			</view>
 
 		</view>
@@ -58,14 +58,14 @@
 						<view style="display: inline-block;width: 30%;">
 							<text class="subtitle">性别</text>
 						</view>
-						<text class="text">{{post.userInfo.baseInfo.gender}}</text>
+						<text class="text">{{userInfo.baseInfo.gender}}</text>
 					</view>
 					<view>
 						<view style="display: inline-block;width: 30%;">
 							<text class="subtitle">居住地</text>
 						</view>
 
-						<text class="text">{{post.userInfo.baseInfo.address}}</text>
+						<text class="text">{{userInfo.baseInfo.address}}</text>
 					</view>
 
 
@@ -78,7 +78,7 @@
 						</view>
 
 						<text class="text">
-							{{post.userInfo.schoolInfo.schoolName}} - {{post.userInfo.schoolInfo.degree}}
+							{{userInfo.schoolInfo.schoolName}} - {{userInfo.schoolInfo.degree}}
 						</text>
 					</view>
 
@@ -87,7 +87,7 @@
 							<text class="subtitle">专业</text>
 						</view>
 
-						<text class="text">{{post.userInfo.schoolInfo.major}}</text>
+						<text class="text">{{userInfo.schoolInfo.major}}</text>
 					</view>
 
 					<view>
@@ -95,7 +95,7 @@
 							<text class="subtitle">毕业时间</text>
 						</view>
 
-						<text class="text">{{post.userInfo.schoolInfo.graduation}}</text>
+						<text class="text">{{userInfo.schoolInfo.graduation}}</text>
 					</view>
 
 				</view>
@@ -107,14 +107,33 @@
 <script setup lang="ts">
 	import { ref, onMounted, Ref } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
-	import { Post, UserInfo } from '../../util/type';
+	import { UserInfo } from '../../util/type';
 	import FastPost from '../../components/FastPost.vue'
 	import { config } from '@/constant/config.js'
 	import { Response } from '@/util/type'
 
-	const post : Ref<Post> = ref();
+	const userInfo: Ref<UserInfo> = ref({
+		userId : "",
+		name : "",
+		avatar : "",
+		role : "", // 身份
+		socialInfo : {
+			likes : 0,
+			fans : 0,
+			following : 0
+		},
+		baseInfo : {
+			gender : "",
+			address : ""
+		},
+		schoolInfo : {
+			schoolName : "",
+			degree : "",
+			major : "",
+			graduation : "" // 毕业时间
+		},
+	});
 	const postNum = ref(0);
-	const bgiURL = ref("https://img1.imgtp.com/2023/07/18/eqV8LJKe.jpg"); // userInfo背景图
 	const tabList = ref([]);
 	const tabIndex = ref(0);
 	const isAttention = ref(false)
@@ -203,33 +222,66 @@
 	});
 
 	onLoad(async (option : any) => {
-		if (option.post != undefined) {
+		if (option.userId != undefined) {
 			uni.showLoading({
 				title: "数据加载中..."
 			});
-			post.value = JSON.parse(decodeURIComponent(option.post));
-			uni.hideLoading();
-		}
-
-		const token = await uni.getStorage({ key: 'token' })
-		const openId = await uni.getStorage({ key: 'openId' })
-		uni.request({
-			url: config.address + '/user/isAttention',
-			method: 'GET',
-			header: {
-				"Authorization": token.data
-			},
-			data: {
-				userId: openId.data,
-				targetId: post.value.userInfo.userId
-			},
-			success: (res : UniApp.RequestSuccessCallbackResult) => {
-				const incrementAttentionRes = res.data as Response<boolean>
-				isAttention.value = incrementAttentionRes.data
+			
+			const token = await uni.getStorage({ key: 'token' })
+			const openId = await uni.getStorage({ key: 'openId' })
+			
+			const res = await uni.request({ 
+				url: config.address + '/user/getUserInfoByUserId',
+				method: 'GET',
+				header: {
+					"Authorization": token.data
+				},
+				data: {
+					userId: option.userId
+				}
+			})
+			
+			const userInfoRes = res.data as Response<UserInfo>
+			if (userInfoRes.code === '200') {
+				userInfo.value = userInfoRes.data
+			} else {
+				uni.showToast({
+					title: "网络错误，请稍后再试",
+					duration: 2000
+				})
 			}
-		})
-		console.log(isAttention.value)
+			
+			uni.request({
+				url: config.address + '/user/isAttention',
+				method: 'GET',
+				header: {
+					"Authorization": token.data
+				},
+				data: {
+					userId: openId.data,
+					targetId: option.userId
+				},
+				success: (res : UniApp.RequestSuccessCallbackResult) => {
+					const incrementAttentionRes = res.data as Response<boolean>
+					isAttention.value = incrementAttentionRes.data
+				}
+			})
+			uni.hideLoading();
+		} else {
+			uni.showToast({
+				title: "网络错误，请稍后再试",
+				duration: 2000
+			})
+		}
 	})
+	
+	const toChat = () => {
+		uni.navigateTo({
+			url: '/pages/chat/chat?id=' + userInfo.value.userId,
+			animationType: 'slide-in-right',
+			animationDuration: 500
+		})
+	}
 </script>
 
 
