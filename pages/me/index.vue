@@ -31,50 +31,50 @@
 	import { Response, User } from '../../util/type'
 	import { useLoginStatus } from '@/hooks/useLoginStatus'
 
-	// onShow(async () => {
-	// 	const loginStatus = await useLoginStatus()
+	onShow(async () => {
+		const loginStatus = await useLoginStatus()
 
-	// 	if (loginStatus) {
-	// 		try {
-	// 			const openId = await uni.getStorage({ key: "openId" })
-	// 			const token = await uni.getStorage({ key: "token" })
-	// 			getUserById(openId.data, token.data)
-	// 		} catch(e) {
-	// 			login()
-	// 		}
-	// 	} else {
-	// 		login()
-	// 	}
-	// })
+		if (loginStatus) {
+			try {
+				const openId = await uni.getStorage({ key: "openId" })
+				const token = await uni.getStorage({ key: "token" })
+				getUserById(openId.data, token.data)
+			} catch(e) {
+				login()
+			}
+		} else {
+			login()
+		}
+	})
 
 
 	// Here is the test code
 	
-	onLoad((options) => {
-		if (options.id === '1') {
-			uni.setStorage({
-				key: 'token',
-				data: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6IntcImlkXCI6XCIxXCIsXCJuaWNrTmFtZVwiOlwiQUJcIixcImF2YXRhclVybFwiOlwiaHR0cDovLzE5Mi4xNjguOTEuMTM5OjgwODAvc3RhdGljL2xvZ28ucG5nXCIsXCJnZW5kZXJcIjpcIueUt1wiLFwicGxhY2VcIjpudWxsLFwiYmlydGhcIjpudWxsLFwic2Nob29sXCI6bnVsbCxcIm1ham9yXCI6bnVsbCxcInF1YWxpZmljYXRpb25cIjpudWxsLFwiZ3JhZHVhdGlvbkRhdGVcIjpudWxsLFwicm9sZVwiOlwiUk9MRV91c2VyXCJ9IiwiaXNzIjoiZmFzdC1kZWVyIiwiZXhwIjoxNjkzNTg2OTk5LCJpYXQiOjE2OTM1Nzk3OTksImp0aSI6Ijc4YTgyNjliLTExMDQtNGU0Zi1iZDlmLWM2YWFiNzZmYTgyZSJ9.agpItf_VGLC6Bp5mSYMU6rIH8BZcty8rSs1nAXQ50Gg"
-			})
+	// onLoad((options) => {
+	// 	if (options.id === '1') {
+	// 		uni.setStorage({
+	// 			key: 'token',
+	// 			data: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6IntcImlkXCI6XCIxXCIsXCJuaWNrTmFtZVwiOlwiQUJcIixcImF2YXRhclVybFwiOlwiaHR0cDovLzE5Mi4xNjguOTEuMTM5OjgwODAvc3RhdGljL2xvZ28ucG5nXCIsXCJnZW5kZXJcIjpcIueUt1wiLFwicGxhY2VcIjpudWxsLFwiYmlydGhcIjpudWxsLFwic2Nob29sXCI6bnVsbCxcIm1ham9yXCI6bnVsbCxcInF1YWxpZmljYXRpb25cIjpudWxsLFwiZ3JhZHVhdGlvbkRhdGVcIjpudWxsLFwicm9sZVwiOlwiUk9MRV91c2VyXCJ9IiwiaXNzIjoiZmFzdC1kZWVyIiwiZXhwIjoxNjkzNTkyNTI1LCJpYXQiOjE2OTM1ODUzMjUsImp0aSI6IjNkNmIyNmZkLTZmNWUtNDQxOS04YWU4LWEzOGEwOTFjYmY3NyJ9.ZgHexG_Kx6yPUDp9PrzElYefMUTn31prwCGBHVIuFrE"
+	// 		})
 			
-			uni.setStorage({
-				key: "openId",
-				data: "1"
-			})
-		} 
+	// 		uni.setStorage({
+	// 			key: "openId",
+	// 			data: "1"
+	// 		})
+	// 	} 
 		
-		if (options.id === '2') {
-			uni.setStorage({
-				key: 'token',
-				data: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6IntcImlkXCI6XCIyXCIsXCJuaWNrTmFtZVwiOlwiQUJcIixcImF2YXRhclVybFwiOlwiaHR0cDovLzE5Mi4xNjguOTEuMTM5OjgwODAvc3RhdGljL2xvZ28ucG5nXCIsXCJnZW5kZXJcIjpcIueUt1wiLFwicGxhY2VcIjpudWxsLFwiYmlydGhcIjpudWxsLFwic2Nob29sXCI6bnVsbCxcIm1ham9yXCI6bnVsbCxcInF1YWxpZmljYXRpb25cIjpudWxsLFwiZ3JhZHVhdGlvbkRhdGVcIjpudWxsLFwicm9sZVwiOlwiUk9MRV91c2VyXCJ9IiwiaXNzIjoiZmFzdC1kZWVyIiwiZXhwIjoxNjkzNTg2OTYxLCJpYXQiOjE2OTM1Nzk3NjEsImp0aSI6IjgwYzk3OTJmLWI4MDMtNDRmOC04NzA2LTM3YzI2NzZhYTI5YiJ9.v3DbQpNuiMJBu4y9zlc1cQVKepT-lJmDi84Gi12adlo"
-			})
+	// 	if (options.id === '2') {
+	// 		uni.setStorage({
+	// 			key: 'token',
+	// 			data: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6IntcImlkXCI6XCIyXCIsXCJuaWNrTmFtZVwiOlwiQUJcIixcImF2YXRhclVybFwiOlwiaHR0cDovLzE5Mi4xNjguOTEuMTM5OjgwODAvc3RhdGljL2xvZ28ucG5nXCIsXCJnZW5kZXJcIjpcIueUt1wiLFwicGxhY2VcIjpudWxsLFwiYmlydGhcIjpudWxsLFwic2Nob29sXCI6bnVsbCxcIm1ham9yXCI6bnVsbCxcInF1YWxpZmljYXRpb25cIjpudWxsLFwiZ3JhZHVhdGlvbkRhdGVcIjpudWxsLFwicm9sZVwiOlwiUk9MRV91c2VyXCJ9IiwiaXNzIjoiZmFzdC1kZWVyIiwiZXhwIjoxNjkzNTkyNDg4LCJpYXQiOjE2OTM1ODUyODgsImp0aSI6ImU1NDBjNDZhLTM4NmYtNDU3Yi1hZWI1LWMyOTFmMTIyOTM3ZCJ9.GkY0AHR5Zd9mQwA1q80HP5OqyulMNccprr2-18Y-hUg"
+	// 		})
 			
-			uni.setStorage({
-				key: "openId",
-				data: "2"
-			})
-		}
-	})
+	// 		uni.setStorage({
+	// 			key: "openId",
+	// 			data: "2"
+	// 		})
+	// 	}
+	// })
 	
 	onShow(async () => {
 		
