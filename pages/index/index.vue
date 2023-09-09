@@ -94,7 +94,13 @@
 	},]
 	
 	const click = (name : any) => {
-		
+		if (name === 0) {
+			uni.navigateTo({
+				url: '/pages/academic/index',
+				animationType: 'zoom-fade-out',
+				animationDuration: 400
+			})
+		}
 	}
 
 	// 论坛内容

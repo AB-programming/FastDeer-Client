@@ -60,7 +60,7 @@
 						</view>
 					</view>
 					<u--text :text="comment.contentText"></u--text>
-					<view class="reply-box">
+					<view class="reply-box ">
 						<view class="item" v-for="(reply, index) in comment.replyList" :key="reply.replyId"
 							v-show="index!=undefined && index<3" @click="toAllReply(comment)">
 							<view class="username">{{ reply.name }}</view>
@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, ref, Ref } from 'vue';
+	import { ref, Ref } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
 	import { Response, Post, Comment } from "../../util/type"
 	import { config } from '@/constant/config.js'

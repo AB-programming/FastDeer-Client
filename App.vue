@@ -45,7 +45,7 @@
 	})
 
 	onUnload(() => {
-
+		uni.closeSocket()
 	})
 </script>
 

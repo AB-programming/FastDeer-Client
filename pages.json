@@ -76,6 +76,33 @@
                 "enablePullDownRefresh": false
             }
         }
+        ,{
+            "path" : "pages/academic/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "学术资讯",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/academic/info",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "文章详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/academic/publish",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "写文章",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
