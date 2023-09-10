@@ -93,3 +93,13 @@ export interface MessageView {
 	content : string,
 	isMe : boolean
 }
+
+export interface AcademicDisplay {
+	academicId : string,
+	userId : string,
+	name : string,
+	avatar : string,
+	title : string,
+	cover : string,
+	date : string
+}

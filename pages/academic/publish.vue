@@ -12,7 +12,7 @@
 					:photoUrl="photoUrl" :api="api" :name="name"/>
 			</u-form-item>
 		</u--form>
-		<u-button type="primary" size="large" shape="circle" @click="publish">
+		<u-button type="primary" size="large" shape="circle" @click="publish" :disabled="disabled">
 			发布
 		</u-button><br>
 		<u-button type="error" size="large" shape="circle">
@@ -25,8 +25,11 @@
 	import plaoyiEditor from '@/components/piaoyi-editor/piaoyi-editor.vue'
 	import { ref } from "vue";
 	import { config } from '@/constant/config.js'
-	
+	import { useDate } from '@/hooks/useDate'
+	import { Response} from '@/util/type'
+		
 	const fileList = ref([])
+	const disabled = ref(false)
 	
 	const deletePic = (event: any) => {
 		fileList.value.splice(event.index, 1);
@@ -34,7 +37,6 @@
 	
 	const afterRead = async (event: any) => {
 		fileList.value.push(event.file)
-		console.log(fileList.value)
 	}
 	
 	const title = ref('')
@@ -56,6 +58,7 @@
 			})
 			return;
 		}
+		disabled.value = true
 		try {
 			const token = await uni.getStorage({key: 'token'})
 			const openId = await uni.getStorage({key: 'openId'})
@@ -68,11 +71,26 @@
 				},
 				formData: {
 					openId: openId.data,
+					date: useDate(),
 					title: title.value,
 					content: content.value
 				}
 			})
-			console.log(res.data)
+			const publishRes = JSON.parse(res.data) as Response<Boolean>
+			
+			if (publishRes.code === '200' && publishRes.data) {
+				disabled.value = false
+				uni.showToast({
+					title: publishRes.msg,
+					duration: 2000
+				})
+				uni.navigateBack()
+			} else {
+				uni.showToast({
+					title: publishRes.msg,
+					duration: 2000
+				})
+			}
 		} catch(e) {
 			uni.showToast({
 				title: "网络异常，请稍后再试",
