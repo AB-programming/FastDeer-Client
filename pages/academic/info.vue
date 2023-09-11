@@ -22,8 +22,7 @@
 			</view>
 			<view class="padding-sm text-lg margin-top-sm">
 				<view class="bg-white margin-tb-sm">
-					<view class="bg-img radius"
-						:style="`background-image: url(${academic.cover});height: 360rpx;`">
+					<view class="bg-img radius" :style="`background-image: url(${academic.cover});height: 360rpx;`">
 					</view>
 				</view><br>
 				<view class="u-content">
@@ -32,18 +31,18 @@
 				</view>
 			</view><br>
 			<view class="padding-left-sm flex align-center">
-				<u-tag text="评测" shape="circle" size="large"></u-tag>&nbsp;
-				<u-tag text="原创视频" type="warning" shape="circle" size="large"></u-tag>&nbsp;
-				<u-tag text="新车上市" type="error" shape="circle" size="large"></u-tag>
+				<u-tag text="技术" shape="circle" size="large"></u-tag>&nbsp;
+				<u-tag text="基础内容" type="warning" shape="circle" size="large"></u-tag>&nbsp;
+				<u-tag text="学术杂刊" type="error" shape="circle" size="large"></u-tag>
 			</view>
 
 			<view class="flex justify-between margin-tb bg-gray margin-lr-sm padding-tb-sm radius">
 				<view class="flex padding-left-sm">
-					<view class="cu-avatar round" style="background-image:url('/static/images/design04.png');">
+					<view class="cu-avatar round" :style="`background-image:url(${academic.avatar});`">
 					</view>
 					<view class="text-gray text-sm padding-left-sm">
-						<view class="text-lg text-black">真相实验室</view>
-						<view class="">讲得清事实，HOLD得住真相!</view>
+						<view class="text-lg text-black">{{academic.name}}</view>
+						<view class="">{{academic.title.substring(0, 16)}}...</view>
 					</view>
 				</view>
 			</view>
@@ -51,69 +50,39 @@
 			<view class="bg-white">
 				<view class="cu-bar">
 					<view class="text-blue text-lg padding-lr-sm">
-						全部评论
+						全部评论,共{{commentList.length}}条评论
 					</view>
 				</view>
-				<view class="cu-list menu-avatar">
-					<view class="cu-item">
-						<view class="cu-avatar round lg" style="background-image:url('/static/images/design05.png');">
-						</view>
-						<view class="content">
-							<view class="text-lg text-bold">
-								谦和钢笔
+				<view v-for="comment in commentList" :key="comment.academicCommentId">
+					<view class="cu-list menu-avatar no-padding">
+						<view class="cu-item">
+							<view class="cu-avatar round lg" :style="`background-image:url(${comment.avatar});`">
 							</view>
-							<view class="text-gray text-sm">
-								05-08
+							<view class="content">
+								<view class="text-lg text-bold">
+									{{comment.name}}
+								</view>
+								<view class="text-gray text-sm">
+									{{comment.date}}
+								</view>
 							</view>
 						</view>
-					</view>
-					<view class="margin-left-sm padding-left text-black">
-						<view class="margin-lr-sm padding-left">
-							<text>从卡罗拉和雷凌的配置就可以看出丰田在中国为了缩减生产成本手段真是无所不用其极。混动卡罗拉全系只有一个型号带雷达，再高配有了视频倒车影像就把雷达取消了。车内的按钮连疏油层都不涂，轻轻蹭一下就是个印子...</text>
+						<view class="margin-left-sm padding-left text-black">
+							<view class="margin-lr-sm padding-left">
+								<text>{{comment.content}}</text>
+							</view>
 						</view>
 					</view>
 				</view>
+			</view><br>
 
-				<view class="cu-list menu-avatar no-padding">
-					<view class="cu-item">
-						<view class="cu-avatar round lg" style="background-image:url('/static/images/design01.png');">
-						</view>
-						<view class="content">
-							<view class="text-lg text-bold">
-								飞奔移动电源
-							</view>
-							<view class="text-gray text-sm">
-								05-08
-							</view>
-						</view>
-					</view>
-					<view class="margin-left-sm padding-left text-black">
-						<view class="margin-lr-sm padding-left">
-							<text>内饰设计不太养眼，但是实际我坐过一次，感觉还可以，没有想象的那么差，可能广汽做工不错的原因。</text>
-						</view>
-					</view>
-				</view>
-
-				<view class="cu-list menu-avatar no-padding padding-bottom" style="height: 210px;">
-					<view class="cu-item">
-						<view class="cu-avatar round lg" style="background-image:url('/static/images/design02.png');">
-						</view>
-						<view class="content">
-							<view class="text-lg text-bold">
-								性感的大象
-							</view>
-							<view class="text-gray text-sm">
-								05-08
-							</view>
-						</view>
-					</view>
-					<view class="margin-left-sm padding-left text-black">
-						<view class="margin-lr-sm padding-left">
-							<text>国产之光。外观设计无可挑剔,全系列车型国产车里面显得高端大气上档次。MG6和550开始及以上的车型底盘和用料值得称赞。</text>
-						</view>
-					</view>
-				</view>
+			<u-text text="发布评论" type="success" margin="20rpx" bold size="16"></u-text>
+			<view class="input">
+				<u-input placeholder="请输入内容" border="surround" v-model="commentValue" shape="circle"
+					class="margin-lr-xs" />
+				<u-button type="primary" shape="circle" style="width: 200rpx;" @click="sendComment">发送</u-button>
 			</view>
+			<br>
 		</view>
 	</view>
 </template>
@@ -124,14 +93,32 @@
 	import { AcademicDisplay } from '@/util/type'
 	import { config } from '@/constant/config.js'
 	import { Response } from '@/util/type'
-	
+	import { useDate } from '@/hooks/useDate'
+	import { useLoginStatus } from '@/hooks/useLoginStatus'
+	import { useStore } from '@/stores/index.js'
+
+	const store = useStore()
+
+	interface AcademicComment {
+		academicCommentId : string,
+		userId : string,
+		name : string,
+		avatar : string,
+		date : string,
+		content : string
+	}
+
 	const content = ref('加载中...')
-	const academic: Ref<AcademicDisplay> = ref()
+	const academic : Ref<AcademicDisplay> = ref()
+	const commentList : Ref<Array<AcademicComment>> = ref([])
+	const commentValue = ref('')
+
 	onLoad(async (option) => {
 		if (option.academic !== undefined) {
 			academic.value = JSON.parse(option.academic)
-			const res = await uni.request({
+			let res = await uni.request({
 				url: config.address + '/academic/getAcademicContentByAcademicId',
+				method: 'GET',
 				data: {
 					academicId: academic.value.academicId
 				}
@@ -142,6 +129,18 @@
 			} else {
 				content.value = '加载失败，请稍后再试'
 			}
+
+			res = await uni.request({
+				url: config.address + '/academic/selectAcademicCommentListByAcademicId',
+				method: 'GET',
+				data: {
+					academicId: academic.value.academicId
+				}
+			})
+			const commentRes = res.data as Response<Array<AcademicComment>>
+			if (commentRes.code === '200') {
+				commentList.value = commentRes.data
+			}
 		} else {
 			uni.showToast({
 				title: "网络异常，请稍后再试",
@@ -149,6 +148,56 @@
 			})
 		}
 	})
+
+	const sendComment = async () => {
+		try {
+			if (!await useLoginStatus()) {
+				uni.showToast({
+					title: "请先登录",
+					duration: 2000
+				});
+				return;
+			}
+		
+			const token = await uni.getStorage({key: 'token'});
+			const openId = await uni.getStorage({key: 'openId'});
+			const date = useDate();
+			const res = await uni.request({
+				url: config.address + '/academic/sendAcademicComment',
+				method: 'POST',
+				header: {
+					"Authorization": token.data
+				},
+				data: {
+					userId: openId.data,
+					academicId: academic.value.academicId,
+					date,
+					content: commentValue.value
+				}
+			})
+			const sendCommentRes = res.data as Response<Boolean>
+			if (sendCommentRes.code === '200' && sendCommentRes.data) {
+				commentList.value.push({
+					academicCommentId: new Date().toString(),
+					userId: openId.data,
+					name: store.nickName,
+					avatar: store.avatarUrl,
+					date: date.toString(),
+					content: commentValue.value
+				})
+			}
+			uni.showToast({
+				title: sendCommentRes.msg,
+				duration: 2000
+			})
+		} catch (e) {
+			uni.showToast({
+				title: "网络异常，请稍后再试",
+				duration: 2000
+			})
+		}
+		commentValue.value = ''
+	}
 </script>
 
 <style scoped>
@@ -157,5 +206,12 @@
 		font-size: 32rpx;
 		color: $u-content-color;
 		line-height: 1.6;
+	}
+
+	.input {
+		display: flex;
+		align-items: center;
+		justify-content: space-evenly;
+		background-color: #fff;
 	}
 </style>

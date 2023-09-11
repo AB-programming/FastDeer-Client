@@ -101,6 +101,13 @@
 				animationDuration: 400
 			})
 		}
+		if (name === 5) {
+			uni.navigateTo({
+				url: '/pages/feedback/feedback',
+				animationType: 'zoom-fade-out',
+				animationDuration: 400
+			})
+		}
 	}
 
 	// 论坛内容
