@@ -112,6 +112,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/resource/resource",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "资源共享",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

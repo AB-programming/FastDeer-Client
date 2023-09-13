@@ -94,19 +94,32 @@
 	},]
 	
 	const click = (name : any) => {
-		if (name === 0) {
-			uni.navigateTo({
-				url: '/pages/academic/index',
-				animationType: 'zoom-fade-out',
-				animationDuration: 400
-			})
-		}
-		if (name === 5) {
-			uni.navigateTo({
-				url: '/pages/feedback/feedback',
-				animationType: 'zoom-fade-out',
-				animationDuration: 400
-			})
+		
+		switch(name) {
+			case 0: {
+				uni.navigateTo({
+					url: '/pages/academic/index',
+					animationType: 'zoom-fade-out',
+					animationDuration: 400
+				});
+				break;
+			}
+			case 2: {
+				uni.navigateTo({
+					url: '/pages/resource/resource',
+					animationType: 'zoom-fade-out',
+					animationDuration: 400
+				});
+				break;
+			}
+			case 5: {
+				uni.navigateTo({
+					url: '/pages/feedback/feedback',
+					animationType: 'zoom-fade-out',
+					animationDuration: 400
+				});
+				break;
+			}
 		}
 	}
 
