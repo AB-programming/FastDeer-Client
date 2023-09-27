@@ -104,9 +104,33 @@
 				});
 				break;
 			}
+			case 1: {
+				uni.navigateTo({
+					url: '/pages/event/event',
+					animationType: 'zoom-fade-out',
+					animationDuration: 400
+				});
+				break;
+			}
 			case 2: {
 				uni.navigateTo({
 					url: '/pages/resource/resource',
+					animationType: 'zoom-fade-out',
+					animationDuration: 400
+				});
+				break;
+			}
+			case 3: {
+				uni.navigateTo({
+					url: '/pages/job/job',
+					animationType: 'zoom-fade-out',
+					animationDuration: 400
+				});
+				break;
+			}
+			case 4: {
+				uni.navigateTo({
+					url: '/pages/volunteer/volunteer',
 					animationType: 'zoom-fade-out',
 					animationDuration: 400
 				});
