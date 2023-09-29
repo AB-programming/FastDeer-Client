@@ -1,7 +1,6 @@
 <template>
 	<view>
 		<view class="cu-timeline margin-xs radius-lg">
-
 			<view class="padding-sm text-center">
 				<text class="text-xxl text-bold text-black">{{academic.title}}</text>
 			</view>

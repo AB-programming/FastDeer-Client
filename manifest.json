@@ -55,19 +55,8 @@
                 "oauth" : {
                     "univerify" : {}
                 },
-                "maps" : {
-                    "amap" : {
-                        "appkey_ios" : "",
-                        "appkey_android" : "3528f7d060333ba91552caff4270c831"
-                    }
-                },
-                "geolocation" : {
-                    "amap" : {
-                        "__platform__" : [ "android" ],
-                        "appkey_ios" : "",
-                        "appkey_android" : "3528f7d060333ba91552caff4270c831"
-                    }
-                }
+                "maps" : {},
+                "geolocation" : {}
             },
             "icons" : {
                 "android" : {

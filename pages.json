@@ -125,7 +125,7 @@
             "path" : "pages/event/event",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationBarTitleText": "校园活动",
                 "enablePullDownRefresh": false
             }
             
@@ -134,7 +134,7 @@
             "path" : "pages/event/info",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationBarTitleText": "活动详情",
                 "enablePullDownRefresh": false
             }
             
@@ -143,7 +143,7 @@
             "path" : "pages/job/job",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationBarTitleText": "校园就业",
                 "enablePullDownRefresh": false
             }
             
@@ -152,7 +152,16 @@
             "path" : "pages/volunteer/volunteer",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationBarTitleText": "志愿者通道",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/volunteer/info",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "志愿者详情",
                 "enablePullDownRefresh": false
             }
             
